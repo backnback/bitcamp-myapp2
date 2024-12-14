@@ -3,66 +3,84 @@
  */
 package bitcamp.myapp;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class App {
 
+    static Scanner sc = new Scanner(System.in);
+    static String[] menus = {"회원", "팀", "프로젝트", "게시판", "도움말", "종료"};
+
 
     public static void main(String[] args) {
 
-        Scanner sc = new Scanner(System.in);
+        printMenu();
+
+        String command;
+        while (true) {
+            try {
+                command = prompt();
+
+                if (command.equals("menu")) {
+                    printMenu();
+
+                } else {
+                    int menuNo = Integer.parseInt(command);
+                    String menuTitle = getMenuTitle(menuNo);
+
+                    if (menuTitle == null) {
+                        System.out.println("올바른 메뉴 번호가 아닙니다.");
+                    } else if (menuTitle.equals("종료")) {
+                        break;
+                    } else {
+                        System.out.println(menuTitle);
+                    }
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("메뉴를 숫자로 입력하세요.");
+            }
+        }
+        System.out.println("종료합니다.");
+
+        sc.close();
+    }
 
 
-        String bold = "\u001B[1m";    // 리펙토링 : 변수에 담아두기
-        String red = "\u001B[31m";    // 좀 더 읽기 쉽게 변함
+    public static void printMenu() {
+        String bold = "\u001B[1m";
+        String red = "\u001B[31m";
         String reset = "\u001B[0m";
 
         String appTitle = "[팀 프로젝트 관리 시스템]";
         String line = "--------------------------------------------";
 
-        String[] menu = {"회원", "팀", "프로젝트", "게시판", "도움말", "종료"};
-
         System.out.println(bold + line + reset);
         System.out.println(bold + appTitle + reset);
-        System.out.println();
-        for (int i = 0; i < menu.length; i++) {
-            if (i == menu.length - 1) {
-                System.out.printf("%s%s%d. %s%s\n", bold, red, i + 1, menu[i], reset);
+        for (int i = 0; i < menus.length; i++) {
+            if (i == menus.length - 1) {
+                System.out.printf("%s%s%d. %s%s\n", bold, red, i + 1, menus[i], reset);
             } else {
-                System.out.printf("%d. %s\n", i + 1, menu[i]);
+                System.out.printf("%d. %s\n", i + 1, menus[i]);
             }
         }
-
-        int menuNo;
-        do {
-            System.out.print(">");
-            menuNo = sc.nextInt();
-
-            switch (menuNo) {
-                case 1:
-                    System.out.println(menu[0] + "입니다.");
-                    break;
-                case 2 :
-                    System.out.println(menu[1] + "입니다.");
-                    break;
-                case 3 :
-                    System.out.println(menu[2] + "입니다.");
-                    break;
-                case 4 :
-                    System.out.println(menu[3] + "입니다.");
-                    break;
-                case 5 :
-                    System.out.println(menu[4] + "입니다.");
-                    break;
-                case 6 :
-                    System.out.println(menu[5] + "입니다.");
-                    break;
-                default:
-                    System.out.println("올바른 메뉴 번호가 아닙니다.");
-            }
-
-        } while (menuNo != menu.length);
-
         System.out.println(bold + line + reset);
     }
+
+    public static String prompt() {
+        System.out.print(">");
+        return sc.nextLine();
+    }
+
+    public static boolean isValidateMenu(int menuNo) {
+        return menuNo >= 1 && menuNo <= menus.length;
+    }
+
+    public static String getMenuTitle(int menuNo) {
+        if (isValidateMenu(menuNo)) {
+            return menus[menuNo - 1];
+        }
+        return null;
+    }
+
 }
