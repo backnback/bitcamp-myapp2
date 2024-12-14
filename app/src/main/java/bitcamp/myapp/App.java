@@ -3,84 +3,120 @@
  */
 package bitcamp.myapp;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class App {
 
-    static Scanner sc = new Scanner(System.in);
-    static String[] menus = {"회원", "팀", "프로젝트", "게시판", "도움말", "종료"};
+  static Scanner sc = new Scanner(System.in);
+  static String[] mainMenus = {"회원", "팀", "프로젝트", "게시판", "도움말", "종료"};
+  static String[][] subMenus = {{"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},
+      {"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},};
 
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        printMenu();
+    printMenu();
 
-        String command;
-        while (true) {
-            try {
-                command = prompt();
+    String command;
+    while (true) {
+      try {
+        command = prompt("메인");
 
-                if (command.equals("menu")) {
-                    printMenu();
+        if (command.equals("menu")) {
+          printMenu();
 
-                } else {
-                    int menuNo = Integer.parseInt(command);
-                    String menuTitle = getMenuTitle(menuNo);
+        } else {
+          int menuNo = Integer.parseInt(command);
+          String menuTitle = getMenuTitle(menuNo, mainMenus);
 
-                    if (menuTitle == null) {
-                        System.out.println("올바른 메뉴 번호가 아닙니다.");
-                    } else if (menuTitle.equals("종료")) {
-                        break;
-                    } else {
-                        System.out.println(menuTitle);
-                    }
-                }
-
-            } catch (NumberFormatException e) {
-                System.out.println("메뉴를 숫자로 입력하세요.");
-            }
-        }
-        System.out.println("종료합니다.");
-
-        sc.close();
-    }
-
-
-    public static void printMenu() {
-        String bold = "\u001B[1m";
-        String red = "\u001B[31m";
-        String reset = "\u001B[0m";
-
-        String appTitle = "[팀 프로젝트 관리 시스템]";
-        String line = "--------------------------------------------";
-
-        System.out.println(bold + line + reset);
-        System.out.println(bold + appTitle + reset);
-        for (int i = 0; i < menus.length; i++) {
-            if (i == menus.length - 1) {
-                System.out.printf("%s%s%d. %s%s\n", bold, red, i + 1, menus[i], reset);
+          if (menuTitle == null) {
+            System.out.println("올바른 메뉴 번호가 아닙니다.");
+          } else if (menuTitle.equals("종료")) {
+            break;
+          } else {
+            if (menuNo >= 1 && menuNo <= 4) {
+              processMenu(menuTitle, subMenus[menuNo]);
             } else {
-                System.out.printf("%d. %s\n", i + 1, menus[i]);
+              System.out.println(menuTitle);
             }
+          }
         }
-        System.out.println(bold + line + reset);
-    }
 
-    public static String prompt() {
-        System.out.print(">");
-        return sc.nextLine();
+      } catch (NumberFormatException e) {
+        System.out.println("메뉴를 숫자로 입력하세요.");
+      }
     }
+    System.out.println("종료합니다.");
 
-    public static boolean isValidateMenu(int menuNo) {
-        return menuNo >= 1 && menuNo <= menus.length;
+    sc.close();
+  }
+
+
+  public static void printMenu() {
+    String bold = "\u001B[1m";
+    String red = "\u001B[31m";
+    String reset = "\u001B[0m";
+
+    String appTitle = "[팀 프로젝트 관리 시스템]";
+    String line = "--------------------------------------------";
+
+    System.out.println(bold + line + reset);
+    System.out.println(bold + appTitle + reset);
+    for (int i = 0; i < mainMenus.length; i++) {
+      if (i == mainMenus.length - 1) {
+        System.out.printf("%s%s%d. %s%s\n", bold, red, i + 1, mainMenus[i], reset);
+      } else {
+        System.out.printf("%d. %s\n", i + 1, mainMenus[i]);
+      }
     }
+    System.out.println(bold + line + reset);
+  }
 
-    public static String getMenuTitle(int menuNo) {
-        if (isValidateMenu(menuNo)) {
-            return menus[menuNo - 1];
+  public static void printSubMenu(String menuTitle, String[] menus) {
+    System.out.printf("[%s]\n", menuTitle);
+    for (int i = 0; i < menus.length; i++) {
+      System.out.printf("%d. %s\n", (i + 1), menus[i]);
+    }
+    System.out.println("9. 이전");
+  }
+
+  public static void processMenu(String menuTitle, String[] menus) {
+    printSubMenu(menuTitle, menus);
+    while (true) {
+      String command = prompt("메인/" + menuTitle);
+      if (command.equals("menu")) {
+        printSubMenu(menuTitle, menus);
+
+      } else if (command.equals("9")) {
+        break;
+
+      } else {
+        try {
+          int menuNo = Integer.parseInt(command);
+          String subMenuTitle = getMenuTitle(menuNo, menus);
+          if (subMenuTitle == null) {
+            System.out.println("올바른 메뉴 번호가 아닙니다.");
+          } else {
+            System.out.println(subMenuTitle);
+          }
+        } catch (NumberFormatException ex) {
+          System.out.println("숫자로 메뉴 번호를 입력하세요.");
         }
-        return null;
+      }
     }
+  }
+
+  public static String prompt(String menuTitle) {
+    System.out.printf("%s>", menuTitle);
+    return sc.nextLine();
+  }
+
+  public static boolean isValidateMenu(int menuNo, String[] menus) {
+    return menuNo >= 1 && menuNo <= menus.length;
+  }
+
+  public static String getMenuTitle(int menuNo, String[] menus) {
+    return isValidateMenu(menuNo, menus) ? menus[menuNo - 1] : null;
+  }
 
 }
