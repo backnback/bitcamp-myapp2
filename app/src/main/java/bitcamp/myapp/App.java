@@ -3,14 +3,17 @@
  */
 package bitcamp.myapp;
 
-import java.util.Scanner;
+import bitcamp.myapp.util.Prompt;
+
+import static bitcamp.myapp.command.BoardCommand.executeBoardCommand;
+import static bitcamp.myapp.command.ProjectCommand.executeProjectCommand;
+import static bitcamp.myapp.command.UserCommand.executeUserCommand;
 
 public class App {
 
-  static Scanner sc = new Scanner(System.in);
-  static String[] mainMenus = {"회원", "팀", "프로젝트", "게시판", "도움말", "종료"};
+  static String[] mainMenus = {"회원", "프로젝트", "게시판", "도움말", "종료"};
   static String[][] subMenus = {{"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},
-      {"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},};
+      {"등록", "목록", "조회", "변경", "삭제"}};
 
 
   public static void main(String[] args) {
@@ -20,7 +23,7 @@ public class App {
     String command;
     while (true) {
       try {
-        command = prompt("메인");
+        command = Prompt.input("메인>");
 
         if (command.equals("menu")) {
           printMenu();
@@ -48,7 +51,7 @@ public class App {
     }
     System.out.println("종료합니다.");
 
-    sc.close();
+    Prompt.close();
   }
 
 
@@ -80,10 +83,18 @@ public class App {
     System.out.println("9. 이전");
   }
 
+  public static boolean isValidateMenu(int menuNo, String[] menus) {
+    return menuNo >= 1 && menuNo <= menus.length;
+  }
+
+  public static String getMenuTitle(int menuNo, String[] menus) {
+    return isValidateMenu(menuNo, menus) ? menus[menuNo - 1] : null;
+  }
+
   public static void processMenu(String menuTitle, String[] menus) {
     printSubMenu(menuTitle, menus);
     while (true) {
-      String command = prompt("메인/" + menuTitle);
+      String command = Prompt.input(String.format("메인/%s>", menuTitle));
       if (command.equals("menu")) {
         printSubMenu(menuTitle, menus);
 
@@ -97,26 +108,30 @@ public class App {
           if (subMenuTitle == null) {
             System.out.println("올바른 메뉴 번호가 아닙니다.");
           } else {
-            System.out.println(subMenuTitle);
+            switch (menuTitle) {
+              case "회원":
+                executeUserCommand(subMenuTitle);
+                break;
+
+              case "프로젝트":
+                executeProjectCommand(subMenuTitle);
+                break;
+
+              case "게시판":
+                executeBoardCommand(subMenuTitle);
+                break;
+
+              default:
+                System.out.printf("%s 메뉴의 명령을 처리할 수 없습니다.\n", menuTitle);
+                break;
+            }
+
           }
         } catch (NumberFormatException ex) {
           System.out.println("숫자로 메뉴 번호를 입력하세요.");
         }
       }
     }
-  }
-
-  public static String prompt(String menuTitle) {
-    System.out.printf("%s>", menuTitle);
-    return sc.nextLine();
-  }
-
-  public static boolean isValidateMenu(int menuNo, String[] menus) {
-    return menuNo >= 1 && menuNo <= menus.length;
-  }
-
-  public static String getMenuTitle(int menuNo, String[] menus) {
-    return isValidateMenu(menuNo, menus) ? menus[menuNo - 1] : null;
   }
 
 }
