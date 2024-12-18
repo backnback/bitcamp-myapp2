@@ -13,7 +13,7 @@ public class App {
 
   static String[] mainMenus = {"회원", "프로젝트", "게시판", "도움말", "종료"};
   static String[][] subMenus = {{"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},
-      {"등록", "목록", "조회", "변경", "삭제"}};
+      {"등록", "목록", "조회", "변경", "삭제"}, {}};
 
 
   public static void main(String[] args) {
@@ -38,7 +38,7 @@ public class App {
             break;
           } else {
             if (menuNo >= 1 && menuNo <= 4) {
-              processMenu(menuTitle, subMenus[menuNo]);
+              processMenu(menuTitle, subMenus[menuNo - 1]);
             } else {
               System.out.println(menuTitle);
             }
