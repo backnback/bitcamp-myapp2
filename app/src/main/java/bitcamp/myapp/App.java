@@ -3,21 +3,29 @@
  */
 package bitcamp.myapp;
 
+import bitcamp.myapp.command.BoardCommand;
+import bitcamp.myapp.command.ProjectCommand;
+import bitcamp.myapp.command.UserCommand;
 import bitcamp.myapp.util.Prompt;
 
-import static bitcamp.myapp.command.BoardCommand.executeBoardCommand;
-import static bitcamp.myapp.command.ProjectCommand.executeProjectCommand;
-import static bitcamp.myapp.command.UserCommand.executeUserCommand;
 
 public class App {
 
-  static String[] mainMenus = {"회원", "프로젝트", "게시판", "도움말", "종료"};
-  static String[][] subMenus = {{"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},
-      {"등록", "목록", "조회", "변경", "삭제"}, {}};
+  String[] mainMenus = {"회원", "프로젝트", "게시판", "공지사항", "도움말", "종료"};
+  String[][] subMenus = {{"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"},
+      {"등록", "목록", "조회", "변경", "삭제"}, {"등록", "목록", "조회", "변경", "삭제"}, {}};
+
+  UserCommand userCommand = new UserCommand();
+  BoardCommand boardCommand = new BoardCommand();
+  BoardCommand noticeCommand = new BoardCommand();
+  ProjectCommand projectCommand = new ProjectCommand(userCommand.getUserList());
 
 
   public static void main(String[] args) {
+    new App().executeApp();
+  }
 
+  void executeApp() {
     printMenu();
 
     String command;
@@ -37,7 +45,7 @@ public class App {
           } else if (menuTitle.equals("종료")) {
             break;
           } else {
-            if (menuNo >= 1 && menuNo <= 4) {
+            if (menuNo >= 1 && menuNo <= 5) {
               processMenu(menuTitle, subMenus[menuNo - 1]);
             } else {
               System.out.println(menuTitle);
@@ -55,7 +63,7 @@ public class App {
   }
 
 
-  public static void printMenu() {
+  void printMenu() {
     String bold = "\u001B[1m";
     String red = "\u001B[31m";
     String reset = "\u001B[0m";
@@ -75,7 +83,7 @@ public class App {
     System.out.println(bold + line + reset);
   }
 
-  public static void printSubMenu(String menuTitle, String[] menus) {
+  void printSubMenu(String menuTitle, String[] menus) {
     System.out.printf("[%s]\n", menuTitle);
     for (int i = 0; i < menus.length; i++) {
       System.out.printf("%d. %s\n", (i + 1), menus[i]);
@@ -83,15 +91,20 @@ public class App {
     System.out.println("9. 이전");
   }
 
-  public static boolean isValidateMenu(int menuNo, String[] menus) {
+  boolean isValidateMenu(int menuNo, String[] menus) {
     return menuNo >= 1 && menuNo <= menus.length;
   }
 
-  public static String getMenuTitle(int menuNo, String[] menus) {
+  String getMenuTitle(int menuNo, String[] menus) {
     return isValidateMenu(menuNo, menus) ? menus[menuNo - 1] : null;
   }
 
-  public static void processMenu(String menuTitle, String[] menus) {
+  void processMenu(String menuTitle, String[] menus) {
+    if (menuTitle.equals("도움말")) {
+      System.out.println("도움말입니다.");
+      return;
+    }
+
     printSubMenu(menuTitle, menus);
     while (true) {
       String command = Prompt.input(String.format("메인/%s>", menuTitle));
@@ -110,15 +123,19 @@ public class App {
           } else {
             switch (menuTitle) {
               case "회원":
-                executeUserCommand(subMenuTitle);
+                userCommand.executeUserCommand(subMenuTitle);
                 break;
 
               case "프로젝트":
-                executeProjectCommand(subMenuTitle);
+                projectCommand.executeProjectCommand(subMenuTitle);
                 break;
 
               case "게시판":
-                executeBoardCommand(subMenuTitle);
+                boardCommand.executeBoardCommand(subMenuTitle);
+                break;
+
+              case "공지사항":
+                noticeCommand.executeBoardCommand(subMenuTitle);
                 break;
 
               default:

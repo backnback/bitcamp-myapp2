@@ -1,5 +1,7 @@
 package bitcamp.myapp.vo;
 
+import bitcamp.myapp.command.ArrayList;
+
 public class Project {
 
   private static int seqNo;
@@ -8,8 +10,7 @@ public class Project {
   private String description;
   private String startDate;
   private String endDate;
-  private User[] members = new User[10];
-  private int memberSize;
+  private ArrayList members = new ArrayList();
 
 
   public static int getNextSeqNo() {
@@ -57,32 +58,8 @@ public class Project {
     this.endDate = endDate;
   }
 
-  public void addMember(User user) {
-    members[memberSize++] = user;
-  }
-
-  public boolean containsMember(User user) {
-    for (int i = 0; i < memberSize; i++) {
-      if (members[i] == user) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public int countMembers() {
-    return this.memberSize;
-  }
-
-  public User getMember(int index) {
-    return members[index];
-  }
-
-  public void deleteMember(int index) {
-    for (int i = index + 1; i < memberSize; i++) {
-      members[i - 1] = members[i];
-    }
-    members[--memberSize] = null;
+  public ArrayList getMembers() {
+    return members;
   }
 }
 
