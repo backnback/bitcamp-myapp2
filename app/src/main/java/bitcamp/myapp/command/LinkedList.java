@@ -38,11 +38,54 @@ public class LinkedList {
   }
 
   public Object delete(int index) {
+    if (index < 0 || index >= size) {
+      return null;
+    }
 
+    Node deletedNode = null;
+    size--;
+
+    if (index == 0) {
+      deletedNode = first;
+      first = first.next;
+      if (first == null) {
+        last = null;
+      }
+      return deletedNode.value;
+    }
+
+    Node cursor = first;
+    int currentIndex = 0;
+
+    while (cursor != null) {
+      if (currentIndex == (index - 1)) {
+        break;
+      }
+      cursor = cursor.next;
+      currentIndex++;
+    }
+
+    deletedNode = cursor.next;
+    cursor.next = cursor.next.next;
+
+    if (cursor.next == null) {
+      last = cursor;
+    }
+    return deletedNode.value;
   }
 
   public int index(Object value) {
+    Node cursor = first;
+    int currentIndex = 0;
 
+    while (cursor != null) {
+      if (cursor.value == value) {
+        return currentIndex;
+      }
+      cursor = cursor.next;
+      currentIndex++;
+    }
+    return -1;
   }
 
   public Object[] getArray() {
@@ -54,6 +97,10 @@ public class LinkedList {
       cursor = cursor.next;
     }
     return arr;
+  }
+
+  public int size() {
+    return size;
   }
 
 }
