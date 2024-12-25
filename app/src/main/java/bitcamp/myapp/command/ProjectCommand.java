@@ -1,5 +1,6 @@
 package bitcamp.myapp.command;
 
+import bitcamp.myapp.util.LinkedList;
 import bitcamp.myapp.util.Prompt;
 import bitcamp.myapp.vo.Project;
 import bitcamp.myapp.vo.User;
@@ -8,40 +9,40 @@ import static bitcamp.myapp.util.Prompt.input;
 import static bitcamp.myapp.util.Prompt.inputInt;
 
 
-public class ProjectCommand {
+public class ProjectCommand extends AbstractCommand {
 
-  ProjectList projectList = new ProjectList();
-  UserList userList;
+  LinkedList projectList = new LinkedList();
+  LinkedList userList;
+  private String[] menus = {"등록", "목록", "조회", "변경", "삭제"};
 
-  public ProjectCommand(UserList userlist) {
+  public ProjectCommand(String menuTitle, LinkedList userlist) {
+    super(menuTitle);
     this.userList = userlist;
   }
 
-  public void executeProjectCommand(String command) {
-    System.out.println(command);
 
-    switch (command) {
+  @Override
+  protected void processMenu(String name) {
+    System.out.printf("[%s]\n", name);
+    switch (name) {
       case "등록":
         addProject();
         break;
-
       case "목록":
         listProject();
         break;
-
       case "조회":
         viewProject();
         break;
-
       case "변경":
         updateProject();
         break;
-
       case "삭제":
         deleteProject();
         break;
     }
   }
+
 
   private void addProject() {
     Project project = new Project();
@@ -68,7 +69,7 @@ public class ProjectCommand {
 
   private void viewProject() {
     int projectNo = inputInt("프로젝트 번호?");
-    Project project = projectList.findByNo(projectNo);
+    Project project = (Project) projectList.get(projectList.indexOf(new Project(projectNo)));
     if (project == null) {
       System.out.println("없는 프로젝트입니다.");
       return;
@@ -85,7 +86,8 @@ public class ProjectCommand {
 
   private void updateProject() {
     int projectNo = inputInt("프로젝트 번호?");
-    Project project = projectList.findByNo(projectNo);
+    Project project = (Project) projectList.get(projectList.indexOf(new Project(projectNo)));
+
     if (project == null) {
       System.out.println("없는 프로젝트입니다.");
       return;
@@ -105,7 +107,7 @@ public class ProjectCommand {
 
   private void deleteProject() {
     int projectNo = Prompt.inputInt("프로젝트 번호?");  // 1부터  시작
-    Project deletedProject = projectList.findByNo(projectNo);
+    Project deletedProject = (Project) projectList.get(projectList.indexOf(new Project(projectNo)));
     if (deletedProject != null) {
       projectList.remove(projectList.indexOf(deletedProject));
       System.out.printf("%d번 프로젝트를 삭제 했습니다.\n", deletedProject.getNo());
@@ -121,7 +123,7 @@ public class ProjectCommand {
       if (userNo == 0) {
         break;
       }
-      User user = userList.findByNo(userNo);
+      User user = (User) userList.get(userList.indexOf(new User(userNo)));
       if (user == null) {
         System.out.println("없는 회원입니다.");
         continue;
@@ -149,5 +151,12 @@ public class ProjectCommand {
       }
     }
   }
+
+
+  @Override
+  protected String[] getMenus() {
+    return menus;
+  }
+
 
 }

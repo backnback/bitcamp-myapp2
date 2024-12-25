@@ -1,13 +1,12 @@
-package bitcamp.myapp.command;
+package bitcamp.myapp.util;
 
-public class LinkedList {
+public class LinkedList extends AbstractList {
 
   Node first;
   Node last;
-  int size;
 
-
-  public void append(Object value) {
+  @Override
+  public void add(Object value) {
     Node newNode = new Node(value);
 
     if (first == null) {
@@ -19,7 +18,8 @@ public class LinkedList {
     size++;
   }
 
-  public Object getValue(int index) {
+  @Override
+  public Object get(int index) {
     if (index < 0 || index >= size) {
       return null;
     }
@@ -37,7 +37,8 @@ public class LinkedList {
     return null;
   }
 
-  public Object delete(int index) {
+  @Override
+  public Object remove(int index) {
     if (index < 0 || index >= size) {
       return null;
     }
@@ -74,12 +75,13 @@ public class LinkedList {
     return deletedNode.value;
   }
 
-  public int index(Object value) {
+  @Override
+  public int indexOf(Object value) {
     Node cursor = first;
     int currentIndex = 0;
 
     while (cursor != null) {
-      if (cursor.value == value) {
+      if (cursor.value.equals(value)) {
         return currentIndex;
       }
       cursor = cursor.next;
@@ -88,7 +90,8 @@ public class LinkedList {
     return -1;
   }
 
-  public Object[] getArray() {
+  @Override
+  public Object[] toArray() {
     Object[] arr = new Object[size];
 
     Node cursor = first;
@@ -97,10 +100,6 @@ public class LinkedList {
       cursor = cursor.next;
     }
     return arr;
-  }
-
-  public int size() {
-    return size;
   }
 
 }
