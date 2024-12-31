@@ -3,22 +3,33 @@
  */
 package bitcamp.myapp;
 
-import bitcamp.myapp.command.BoardCommand;
-import bitcamp.myapp.command.HelpCommand;
-import bitcamp.myapp.command.ProjectCommand;
-import bitcamp.myapp.command.UserCommand;
+import bitcamp.myapp.command.*;
+import bitcamp.myapp.util.ArrayList;
+import bitcamp.myapp.util.LinkedList;
+import bitcamp.myapp.util.List;
 import bitcamp.myapp.util.Prompt;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class App {
 
-  String[] mainMenus = {"프로젝트", "게시판", "도움말", "종료"};
+  String[] mainMenus = {"회원", "프로젝트", "게시판", "도움말", "종료"};
 
-  UserCommand userCommand = new UserCommand("회원");
-  BoardCommand boardCommand = new BoardCommand("게시판");
-  ProjectCommand projectCommand = new ProjectCommand("프로젝트", userCommand.getUserList());
-  HelpCommand helpCommand = new HelpCommand("도움말");
+  Map<String, Command> commandMap = new HashMap<>();
 
+  public App() {
+    List userList = new ArrayList();
+    List boardList = new LinkedList();
+    List projectList = new LinkedList();
+
+    UserCommand userCommand = new UserCommand("회원", userList);
+    commandMap.put("userCommand", userCommand);
+    commandMap.put("boardCommand", new BoardCommand("게시판", boardList));
+    commandMap.put("projectCommand", new ProjectCommand("프로젝트", projectList, userList));
+    commandMap.put("helpCommand", new HelpCommand("도움말"));
+  }
 
   public static void main(String[] args) {
     new App().execute();
@@ -86,23 +97,12 @@ public class App {
   }
 
   void processMenu(String menuTitle) {
-
-    switch (menuTitle) {
-      case "회원":
-        userCommand.execute();
-        break;
-      case "프로젝트":
-        projectCommand.execute();
-        break;
-      case "게시판":
-        boardCommand.execute();
-        break;
-      case "도움말":
-        helpCommand.execute();
-        break;
-      default:
-        System.out.printf("%s 메뉴의 명령을 처리할 수 없습니다.\n", menuTitle);
+    Command command = commandMap.get(menuTitle);
+    if (command == null) {
+      System.out.printf("%s 메뉴의 명령을 처리할 수 없습니다.\n", menuTitle);
+      return;
     }
+    command.execute();
   }
 
 }
