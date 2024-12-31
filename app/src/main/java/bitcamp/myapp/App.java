@@ -4,10 +4,7 @@
 package bitcamp.myapp;
 
 import bitcamp.myapp.command.*;
-import bitcamp.myapp.util.ArrayList;
-import bitcamp.myapp.util.LinkedList;
-import bitcamp.myapp.util.List;
-import bitcamp.myapp.util.Prompt;
+import bitcamp.myapp.util.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +12,10 @@ import java.util.Map;
 
 public class App {
 
-  String[] mainMenus = {"회원", "프로젝트", "게시판", "도움말", "종료"};
+  String[] mainMenus = {"회원", "프로젝트", "게시판", "명령내역", "도움말", "종료"};
 
   Map<String, Command> commandMap = new HashMap<>();
+  Stack menuPath = new Stack();
 
   public App() {
     List userList = new ArrayList();
@@ -25,10 +23,12 @@ public class App {
     List projectList = new LinkedList();
 
     UserCommand userCommand = new UserCommand("회원", userList);
-    commandMap.put("userCommand", userCommand);
-    commandMap.put("boardCommand", new BoardCommand("게시판", boardList));
-    commandMap.put("projectCommand", new ProjectCommand("프로젝트", projectList, userList));
-    commandMap.put("helpCommand", new HelpCommand("도움말"));
+    commandMap.put("회원", userCommand);
+    commandMap.put("게시판", new BoardCommand("게시판", boardList));
+    commandMap.put("프로젝트", new ProjectCommand("프로젝트", projectList, userList));
+    commandMap.put("도움말", new HelpCommand("도움말"));
+    commandMap.put("명령내역", new HistoryCommand());
+
   }
 
   public static void main(String[] args) {
@@ -36,6 +36,7 @@ public class App {
   }
 
   void execute() {
+    menuPath.push("메인");
     printMenu();
 
     String command;
@@ -102,7 +103,7 @@ public class App {
       System.out.printf("%s 메뉴의 명령을 처리할 수 없습니다.\n", menuTitle);
       return;
     }
-    command.execute();
+    command.execute(menuPath);
   }
 
 }
